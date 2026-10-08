@@ -105,6 +105,26 @@ public class DesenhoLauncherTest {
         assertEquals(DesenhoLauncher.COR_PAINEL, corEm(imagem, espaco.x + 130, espaco.y + 130));
     }
 
+    @Test
+    public void bonecoDaForcaTemOPosteECabecaVerdeNoBanner() {
+        EstadoLauncher estado = novoEstadoComDisponivel("pong");
+        estado.setIndiceSelecionado(1);
+        BufferedImage imagem = renderizar(estado, artes());
+        Rectangle espaco = LayoutLauncher.areaDaArte(LayoutLauncher.areaBase());
+        assertEquals(DesenhoLauncher.COR_TEXTO_MEDIO, corEm(imagem, espaco.x + 260, espaco.y + 400));
+        assertEquals(DesenhoLauncher.COR_ACENTO, corEm(imagem, espaco.x + 416, espaco.y + 177));
+    }
+
+    @Test
+    public void cardDaForcaDesenhaOBonecoNoLugarDoIcone() {
+        EstadoLauncher estado = novoEstadoComDisponivel("pong");
+        estado.setIndiceSelecionado(1);
+        BufferedImage imagem = renderizar(estado, artes());
+        Rectangle card = LayoutLauncher.cardDoIndice(LayoutLauncher.areaBase(), 1);
+        Rectangle icone = LayoutLauncher.iconeDoCard(card);
+        assertEquals(DesenhoLauncher.COR_ACENTO, corEm(imagem, icone.x + 26, icone.y + 22));
+    }
+
     private EstadoLauncher estadoComTodosDisponiveis() {
         return novoEstadoComDisponivel("pong", "forca", "snake", "campominado");
     }

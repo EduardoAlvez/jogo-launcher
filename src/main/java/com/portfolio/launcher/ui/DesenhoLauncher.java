@@ -93,6 +93,10 @@ public final class DesenhoLauncher {
     }
 
     private static void desenharArteDeGuarda(Graphics2D g, Rectangle espaco, JogoInfo jogo) {
+        if (!jogo.temArte()) {
+            desenharBonecoDaForca(g, espaco, jogo);
+            return;
+        }
         Rectangle cartaz = new Rectangle(espaco.x + 110, espaco.y + 110, 560, 420);
         g.setColor(new Color(COR_PAINEL));
         g.fillRoundRect(cartaz.x, cartaz.y, cartaz.width, cartaz.height, ARREDONDAMENTO, ARREDONDAMENTO);
@@ -107,6 +111,38 @@ public final class DesenhoLauncher {
         g.drawString("JOGO DO PORTFOLIO",
                 cartaz.x + (cartaz.width - largura(g, "JOGO DO PORTFOLIO")) / 2,
                 cartaz.y + 260);
+    }
+
+    private static void desenharBonecoDaForca(Graphics2D g, Rectangle espaco, JogoInfo jogo) {
+        Rectangle palco = new Rectangle(espaco.x + 110, espaco.y + 60, 600, 500);
+        g.setColor(new Color(COR_PAINEL));
+        g.fillRoundRect(palco.x, palco.y, palco.width, palco.height,
+                ARREDONDAMENTO, ARREDONDAMENTO);
+        g.setColor(new Color(COR_BORDA_CARD));
+        g.setStroke(new BasicStroke(2f));
+        g.drawRoundRect(palco.x, palco.y, palco.width, palco.height,
+                ARREDONDAMENTO, ARREDONDAMENTO);
+
+        int xPoste = palco.x + 150;
+        int yBase = palco.y + 460;
+        g.setColor(new Color(COR_TEXTO_MEDIO));
+        g.fillRect(xPoste, palco.y + 40, 8, yBase - (palco.y + 40));
+        g.fillRect(xPoste, palco.y + 40, 160, 10);
+        g.fillRect(xPoste + 150, palco.y + 50, 8, 30);
+
+        int hx = xPoste + 156;
+        g.setColor(new Color(COR_ACENTO));
+        g.fillOval(hx - 13, palco.y + 80, 26, 26);
+        g.fillRect(hx - 3, palco.y + 106, 6, 96);
+        g.fillRect(hx - 40, palco.y + 122, 34, 6);
+        g.fillRect(hx + 6, palco.y + 122, 34, 6);
+        g.fillRect(hx - 30, palco.y + 296, 30, 6);
+        g.fillRect(hx, palco.y + 296, 30, 6);
+
+        g.setColor(new Color(COR_TEXTO));
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 36));
+        String nome = jogo.getNome();
+        g.drawString(nome, palco.x + (palco.width - largura(g, nome)) / 2, palco.y + 400);
     }
 
     private static void desenharTitulo(Graphics2D g, Rectangle area) {
@@ -221,11 +257,19 @@ public final class DesenhoLauncher {
         g.setColor(new Color(COR_ACENTO));
         g.setStroke(new BasicStroke(2f));
         g.drawRoundRect(icone.x, icone.y, icone.width, icone.height, 10, 10);
+        desenharBonequinho(g, icone);
+    }
+
+    private static void desenharBonequinho(Graphics2D g, Rectangle icone) {
         g.setColor(new Color(COR_TEXTO_MEDIO));
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
-        g.drawString(jogo.getNome().substring(0, 1),
-                icone.x + (icone.width - largura(g, jogo.getNome().substring(0, 1))) / 2,
-                icone.y + 33);
+        g.fillRect(icone.x + 13, icone.y + 6, 3, 30);
+        g.fillRect(icone.x + 13, icone.y + 6, 18, 3);
+        g.fillRect(icone.x + 27, icone.y + 9, 3, 8);
+        g.setColor(new Color(COR_ACENTO));
+        g.fillOval(icone.x + 21, icone.y + 17, 10, 10);
+        g.fillRect(icone.x + 24, icone.y + 27, 4, 14);
+        g.fillRect(icone.x + 20, icone.y + 39, 6, 3);
+        g.fillRect(icone.x + 28, icone.y + 39, 6, 3);
     }
 
     private static void desenharJogar(Graphics2D g, Rectangle area, EstadoLauncher estado) {
