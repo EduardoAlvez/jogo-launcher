@@ -31,6 +31,7 @@ public final class DesenhoLauncher {
     public static final int COR_JOGAR_DESABILITADO = 0x2a313a;
     public static final int COR_TEXTO = 0xe8eaed;
     public static final int COR_TEXTO_MEDIO = 0x98a2ac;
+    public static final int COR_TOAST = 0x29313b;
 
     private static final int ARREDONDAMENTO = 14;
 
@@ -48,6 +49,7 @@ public final class DesenhoLauncher {
             desenharCard(g, area, i, arteDe(artes, CatalogoDeJogos.lista().get(i)), estado);
         }
         desenharJogar(g, area, estado);
+        desenharMensagem(g, area, estado);
         desenharDica(g, area);
     }
 
@@ -284,6 +286,22 @@ public final class DesenhoLauncher {
         String rotulo = "JOGAR";
         g.setColor(new Color(COR_TEXTO));
         centralizar(g, rotulo, botao, botao.y + 38);
+    }
+
+    private static void desenharMensagem(Graphics2D g, Rectangle area, EstadoLauncher estado) {
+        String mensagem = estado.getMensagem();
+        if (mensagem.isBlank()) {
+            return;
+        }
+        int largura = 560;
+        int altura = 38;
+        int x = area.x + (area.width - largura) / 2;
+        int y = area.y + 84;
+        g.setColor(new Color(COR_TOAST));
+        g.fillRoundRect(x, y, largura, altura, 19, 19);
+        g.setColor(new Color(COR_TEXTO));
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
+        centralizar(g, mensagem, new Rectangle(x, y, largura, altura), y + 26);
     }
 
     private static void desenharDica(Graphics2D g, Rectangle area) {

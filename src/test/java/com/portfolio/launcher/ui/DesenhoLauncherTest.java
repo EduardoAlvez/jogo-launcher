@@ -125,6 +125,22 @@ public class DesenhoLauncherTest {
         assertEquals(DesenhoLauncher.COR_ACENTO, corEm(imagem, icone.x + 26, icone.y + 22));
     }
 
+    @Test
+    public void mensagemApareceNoPainelDeToast() {
+        EstadoLauncher estado = estadoComTodosDisponiveis();
+        estado.setMensagem("Abrindo Snake...");
+        BufferedImage imagem = renderizar(estado, artes());
+        Rectangle area = LayoutLauncher.areaBase();
+        assertEquals(DesenhoLauncher.COR_TOAST, corEm(imagem, area.width / 2 - 270, 103));
+    }
+
+    @Test
+    public void semMensagemNaoHaToast() {
+        BufferedImage imagem = renderizar(estadoComTodosDisponiveis(), artes());
+        Rectangle area = LayoutLauncher.areaBase();
+        assertEquals(MAGENTA, corEm(imagem, area.width / 2 - 270, 103));
+    }
+
     private EstadoLauncher estadoComTodosDisponiveis() {
         return novoEstadoComDisponivel("pong", "forca", "snake", "campominado");
     }

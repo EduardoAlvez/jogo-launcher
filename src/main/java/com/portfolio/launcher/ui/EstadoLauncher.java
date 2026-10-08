@@ -10,6 +10,7 @@ public final class EstadoLauncher {
     private final Set<String> disponiveis;
     private int indiceSelecionado;
     private Alvo hover = Alvo.NENHUM;
+    private String mensagem = "";
 
     public EstadoLauncher(Set<String> disponiveis) {
         this.disponiveis = Set.copyOf(disponiveis);
@@ -44,5 +45,13 @@ public final class EstadoLauncher {
 
     public boolean disponivel(int indice) {
         return disponivel(CatalogoDeJogos.lista().get(indice));
+    }
+
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem == null ? "" : mensagem;
     }
 }
