@@ -5,6 +5,7 @@ import com.portfolio.launcher.core.DisponibilidadeDeJogos;
 import com.portfolio.launcher.core.JogoInfo;
 import com.portfolio.launcher.core.Lancador;
 import com.portfolio.launcher.core.LancadorProcesso;
+import com.portfolio.launcher.recursos.CarregadorDeArtes;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -58,7 +59,11 @@ public final class TelaLauncher extends JPanel {
     }
 
     public TelaLauncher() {
-        this(new LancadorProcesso(), Path.of(System.getProperty("user.dir")), new HashMap<>());
+        this(new LancadorProcesso(), raizPadrao(), CarregadorDeArtes.carregar(raizPadrao()));
+    }
+
+    private static Path raizPadrao() {
+        return Path.of(System.getProperty("user.dir"));
     }
 
     public void abrir() {
