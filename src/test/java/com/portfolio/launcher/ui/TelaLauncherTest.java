@@ -57,6 +57,22 @@ public class TelaLauncherTest {
     }
 
     @Test
+    public void setasLateraisTambemMudamASelecao() {
+        TelaLauncher tela = novaTelaSemPasta();
+        tela.estado().setIndiceSelecionado(0);
+        tela.tratarTecla(KeyEvent.VK_RIGHT);
+        assertEquals(1, tela.estado().getIndiceSelecionado());
+        tela.tratarTecla(KeyEvent.VK_D);
+        assertEquals(2, tela.estado().getIndiceSelecionado());
+        tela.tratarTecla(KeyEvent.VK_LEFT);
+        assertEquals(1, tela.estado().getIndiceSelecionado());
+        tela.tratarTecla(KeyEvent.VK_A);
+        assertEquals(0, tela.estado().getIndiceSelecionado());
+        tela.tratarTecla(KeyEvent.VK_LEFT);
+        assertEquals(3, tela.estado().getIndiceSelecionado());
+    }
+
+    @Test
     public void enterJogaOSelecionadoQuandoEstaDisponivel() throws IOException {
         TelaLauncher tela = novaTela();
         assertTrue(tela.tratarTecla(KeyEvent.VK_ENTER));

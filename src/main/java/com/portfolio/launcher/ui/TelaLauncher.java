@@ -97,6 +97,10 @@ public final class TelaLauncher extends JPanel {
     }
 
     private void configurarTeclado() {
+        ligar(KeyEvent.VK_LEFT, () -> moverPara(-1));
+        ligar(KeyEvent.VK_RIGHT, () -> moverPara(1));
+        ligar(KeyEvent.VK_A, () -> moverPara(-1));
+        ligar(KeyEvent.VK_D, () -> moverPara(1));
         ligar(KeyEvent.VK_UP, () -> moverPara(-1));
         ligar(KeyEvent.VK_DOWN, () -> moverPara(1));
         ligar(KeyEvent.VK_W, () -> moverPara(-1));
@@ -195,11 +199,15 @@ public final class TelaLauncher extends JPanel {
     public boolean tratarTecla(int codigo) {
         switch (codigo) {
             case KeyEvent.VK_UP:
+            case KeyEvent.VK_LEFT:
             case KeyEvent.VK_W:
+            case KeyEvent.VK_A:
                 moverPara(-1);
                 return true;
             case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_S:
+            case KeyEvent.VK_D:
                 moverPara(1);
                 return true;
             case KeyEvent.VK_ENTER:
