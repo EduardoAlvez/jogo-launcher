@@ -26,12 +26,12 @@ public class LayoutLauncherTest {
             Rectangle card = LayoutLauncher.cardDoIndice(area, i);
             assertEquals(primeiro.y, card.y);
             assertEquals(primeiro.height, card.height);
-            assertEquals(20 + i * 212, card.x);
-            assertEquals(196, card.width);
+            assertEquals(20 + i * 208, card.x);
+            assertEquals(184, card.width);
             ultimo = card;
         }
-        assertEquals(522, ultimo.y);
-        assertEquals(598, ultimo.y + ultimo.height);
+        assertEquals(535, ultimo.y);
+        assertEquals(609, ultimo.y + ultimo.height);
         assertTrue(ultimo.y + ultimo.height < area.height);
     }
 
@@ -63,7 +63,7 @@ public class LayoutLauncherTest {
         Rectangle ultimoCard = LayoutLauncher.cardDoIndice(area, 3);
         assertEquals(ultimoCard.y, jogar.y);
         assertEquals(196, jogar.width);
-        assertEquals(76, jogar.height);
+        assertEquals(74, jogar.height);
         assertTrue(jogar.x > ultimoCard.x + ultimoCard.width);
         assertTrue(jogar.x + jogar.width <= area.width);
         assertTrue(jogar.y + jogar.height <= area.height);
@@ -87,7 +87,7 @@ public class LayoutLauncherTest {
         assertEquals(0, banner.x);
         assertEquals(0, banner.y);
         assertEquals(1100, banner.width);
-        assertEquals(480, banner.height);
+        assertEquals(504, banner.height);
     }
 
     @Test

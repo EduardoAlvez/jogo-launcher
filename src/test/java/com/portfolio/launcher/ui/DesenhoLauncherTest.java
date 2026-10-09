@@ -21,7 +21,7 @@ public class DesenhoLauncherTest {
     @Test
     public void fundoEscureceDeCimaParaBaixoNaFaixaVisivel() {
         BufferedImage imagem = renderizar(estadoComTodosDisponiveis(), artes());
-        int topo = corEm(imagem, 5, 482);
+        int topo = corEm(imagem, 5, 506);
         int base = corEm(imagem, 5, 638);
         assertTrue("o gradiente do fundo tem que escurecer de cima para baixo",
                 somaDeCanais(topo) < somaDeCanais(base));
@@ -33,7 +33,21 @@ public class DesenhoLauncherTest {
         estado.setIndiceSelecionado(0);
         BufferedImage imagem = renderizar(estado, artes());
         Rectangle card = LayoutLauncher.cardDoIndice(LayoutLauncher.areaBase(), 0);
-        assertEquals(DesenhoLauncher.COR_ACENTO, corEm(imagem, card.x + 130, card.y + 2));
+        Rectangle visual = DesenhoLauncher.cardVisual(card, true, false);
+        assertEquals(DesenhoLauncher.COR_ACENTO,
+                corEm(imagem, visual.x + visual.width / 2, visual.y + 2));
+    }
+
+    @Test
+    public void cardSelecionadoFicaMaiorQueOsOutros() {
+        EstadoLauncher estado = estadoComTodosDisponiveis();
+        estado.setIndiceSelecionado(0);
+        BufferedImage imagem = renderizar(estado, artes());
+        Rectangle card = LayoutLauncher.cardDoIndice(LayoutLauncher.areaBase(), 0);
+        Rectangle visual = DesenhoLauncher.cardVisual(card, true, false);
+        assertTrue("o card selecionado tem que crescer", visual.width > card.width);
+        assertEquals(DesenhoLauncher.COR_ACENTO,
+                corEm(imagem, visual.x + visual.width / 2, visual.y + 2));
     }
 
     @Test
@@ -130,7 +144,8 @@ public class DesenhoLauncherTest {
         estado.setIndiceSelecionado(1);
         BufferedImage imagem = renderizar(estado, artes());
         Rectangle card = LayoutLauncher.cardDoIndice(LayoutLauncher.areaBase(), 1);
-        Rectangle icone = LayoutLauncher.iconeDoCard(card);
+        Rectangle visual = DesenhoLauncher.cardVisual(card, true, false);
+        Rectangle icone = LayoutLauncher.iconeDoCard(visual);
         assertEquals(DesenhoLauncher.COR_ACENTO, corEm(imagem, icone.x + 26, icone.y + 22));
     }
 

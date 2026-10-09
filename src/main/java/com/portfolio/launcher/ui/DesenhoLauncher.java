@@ -36,8 +36,28 @@ public final class DesenhoLauncher {
 
     private static final int ARREDONDAMENTO = 14;
     private static final int LARGURA_ESCURECIMENTO = 520;
+    private static final int CRESCIMENTO_CARD = 6;
+    private static final int CRESCIMENTO_CARD_HOVER = 3;
+    private static final int CRESCIMENTO_JOGAR_HOVER = 4;
 
     private DesenhoLauncher() {
+    }
+
+    static Rectangle cardVisual(Rectangle card, boolean selecionado, boolean hover) {
+        int extra = selecionado ? CRESCIMENTO_CARD : hover ? CRESCIMENTO_CARD_HOVER : 0;
+        return inflar(card, extra);
+    }
+
+    static Rectangle jogarVisual(Rectangle botao, boolean hover) {
+        return inflar(botao, hover ? CRESCIMENTO_JOGAR_HOVER : 0);
+    }
+
+    private static Rectangle inflar(Rectangle retangulo, int extra) {
+        if (extra == 0) {
+            return retangulo;
+        }
+        return new Rectangle(retangulo.x - extra, retangulo.y - extra,
+                retangulo.width + 2 * extra, retangulo.height + 2 * extra);
     }
 
     public static void desenhar(Graphics2D g, Rectangle area, EstadoLauncher estado,
@@ -213,11 +233,12 @@ public final class DesenhoLauncher {
 
     private static void desenharCard(Graphics2D g, Rectangle area, int indice,
                                      BufferedImage arte, EstadoLauncher estado) {
-        Rectangle card = LayoutLauncher.cardDoIndice(area, indice);
+        Rectangle base = LayoutLauncher.cardDoIndice(area, indice);
         JogoInfo jogo = CatalogoDeJogos.lista().get(indice);
         boolean selecionado = indice == estado.getIndiceSelecionado();
         boolean hover = ehHoverDesteCard(indice, estado.getHover());
         boolean disponivel = estado.disponivel(jogo);
+        Rectangle card = cardVisual(base, selecionado, hover);
 
         int corFundo = !disponivel ? COR_CARD_DESABILITADO
                 : hover ? COR_CARD_HOVER : COR_CARD;
@@ -283,9 +304,10 @@ public final class DesenhoLauncher {
     }
 
     private static void desenharJogar(Graphics2D g, Rectangle area, EstadoLauncher estado) {
-        Rectangle botao = LayoutLauncher.jogar(area);
+        Rectangle base = LayoutLauncher.jogar(area);
         boolean disponivel = estado.disponivel(estado.jogoSelecionado());
         boolean hover = estado.getHover() == Alvo.JOGAR && disponivel;
+        Rectangle botao = jogarVisual(base, hover);
         int cor = !disponivel ? COR_JOGAR_DESABILITADO
                 : hover ? COR_JOGAR_HOVER : COR_JOGAR;
         g.setColor(new Color(cor));

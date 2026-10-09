@@ -8,13 +8,14 @@ public final class LayoutLauncher {
     public static final int ALTURA_BASE = 640;
 
     private static final int MARGEM = 20;
-    private static final int ALTURA_FAIXA = 160;
-    private static final int CARD_LARGURA = 196;
-    private static final int CARD_ALTURA = 76;
-    private static final int ENTRE_CARDS = 16;
+    private static final int ALTURA_FAIXA = 136;
+    private static final int CARD_LARGURA = 184;
+    private static final int CARD_ALTURA = 74;
+    private static final int ENTRE_CARDS = 24;
     private static final int LARGURA_JOGAR = 196;
-    private static final int ALTURA_JOGAR = 76;
-    private static final int LARGURA_INFO = 460;
+    private static final int ALTURA_JOGAR = 74;
+    private static final int LARGURA_INFO = 400;
+    private static final int ALTURA_INFO = 300;
 
     private LayoutLauncher() {
     }
@@ -27,13 +28,16 @@ public final class LayoutLauncher {
         return new Rectangle(area.x, area.y, area.width, area.height - ALTURA_FAIXA);
     }
 
+    private static int yDaLinhaDeBaixo(Rectangle area, int alturaDoElemento) {
+        return area.y + (area.height - ALTURA_FAIXA) + (ALTURA_FAIXA - alturaDoElemento) / 2;
+    }
+
     public static Rectangle cardDoIndice(Rectangle area, int indice) {
         if (indice < 0 || indice >= 4) {
             throw new IllegalArgumentException("indice de card invalido: " + indice);
         }
         int x = area.x + MARGEM + indice * (CARD_LARGURA + ENTRE_CARDS);
-        int y = area.y + (area.height - ALTURA_FAIXA) + (ALTURA_FAIXA - CARD_ALTURA) / 2;
-        return new Rectangle(x, y, CARD_LARGURA, CARD_ALTURA);
+        return new Rectangle(x, yDaLinhaDeBaixo(area, CARD_ALTURA), CARD_LARGURA, CARD_ALTURA);
     }
 
     public static Rectangle iconeDoCard(Rectangle card) {
@@ -45,19 +49,16 @@ public final class LayoutLauncher {
 
     public static Rectangle jogar(Rectangle area) {
         int x = area.x + area.width - MARGEM - LARGURA_JOGAR;
-        int y = area.y + (area.height - ALTURA_FAIXA) + (ALTURA_FAIXA - ALTURA_JOGAR) / 2;
-        return new Rectangle(x, y, LARGURA_JOGAR, ALTURA_JOGAR);
+        return new Rectangle(x, yDaLinhaDeBaixo(area, ALTURA_JOGAR), LARGURA_JOGAR, ALTURA_JOGAR);
     }
 
     public static Rectangle descricao(Rectangle area) {
-        int x = area.x + MARGEM;
-        int y = area.y + 96;
-        return new Rectangle(x, y, 460, 360);
+        return new Rectangle(area.x + MARGEM, area.y + 96, LARGURA_INFO, ALTURA_INFO);
     }
 
     public static Rectangle areaDeGuarda(Rectangle area) {
         Rectangle banner = areaDaArte(area);
-        int x = area.x + MARGEM + 460 + 40;
+        int x = area.x + MARGEM + LARGURA_INFO + 40;
         int y = area.y + 40;
         int largura = area.x + area.width - MARGEM - x;
         return new Rectangle(x, y, largura, banner.height - 80);
