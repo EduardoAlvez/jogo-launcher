@@ -1,8 +1,9 @@
 # Jogo Launcher — Portfólio Java
 
 Launcher dos jogos do portfólio, no estilo do cliente antigo do League of
-Legends: um **banner em destaque** ocupando a janela toda, com os **cards dos
-quatro jogos** por cima, a descrição do selecionado e o botão **JOGAR**.
+Legends: um **banner em destaque** no topo ocupando a largura da janela, com a
+**info do jogo escolhido** à esquerda por cima da arte, os **cards dos quatro
+jogos** numa faixa embaixo e o botão **JOGAR** à direita dessa faixa.
 
 Cada jogo abre em **processo externo**, com o `java` da própria JVM (`java.home`).
 Não é firula: o Snake e o Campo Minado chamam `System.exit(0)`, então embutir o
@@ -29,7 +30,7 @@ instalado** e o botão JOGAR fica apagado (a Forca só entra depois de publicada
 | Entrada | Ação |
 |---------|------|
 | Mouse sobre o card | Seleciona o jogo |
-| `↑` / `↓` ou `W` / `S` | Move a seleção |
+| `←` / `→` (ou `A` / `D`) ou `↑` / `↓` / `W` / `S` | Move a seleção |
 | `Enter` / `Espaço` ou clique em JOGAR | Abre o jogo selecionado |
 | `Esc` | Fecha o launcher |
 
@@ -69,7 +70,7 @@ Cada jar vem do build do respectivo repositório (`mvn clean package`).
 
 ## Testes
 
-**74 testes** com JUnit 4, cobertura com JaCoCo:
+**76 testes** com JUnit 4, cobertura com JaCoCo:
 
 ```
 mvn test

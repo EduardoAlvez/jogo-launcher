@@ -2,8 +2,8 @@
 
 Quinto projeto do portfólio, depois do Pong, da Forca, do Snake e do Campo
 Minado. Não é um jogo: é a **vitrine** que reúne os outros quatro, no estilo do
-cliente antigo do League of Legends — banner do jogo escolhido ocupando a janela
-toda, cards por cima e o botão JOGAR.
+cliente antigo do League of Legends — banner do jogo escolhido no topo, info à
+esquerda sobre a arte e uma faixa de cards embaixo, com o botão JOGAR à direita.
 
 Cada jogo abre em **processo externo** com o `java` da própria JVM. É a decisão
 central do projeto: o Snake e o Campo Minado chamam `System.exit(0)`, então rodar
@@ -24,7 +24,7 @@ src/main/java/com/portfolio/launcher/
 ├── recursos/   Leitura dos logos de dentro dos jars dos jogos
 │   └── CarregadorDeArtes.java
 └── ui/         Interface gráfica Swing
-    ├── LayoutLauncher.java   Geometria full-bleed: onde cada coisa é desenhada
+    ├── LayoutLauncher.java   Geometria: banner, painel de info e faixa de cards
     ├── DesenhoLauncher.java  O desenho, sem janela (pinta em qualquer Graphics2D)
     ├── EstadoLauncher.java   Seleção, hover, disponibilidade e aviso
     └── TelaLauncher.java     A janela: mouse, teclado e lançamento
@@ -44,8 +44,10 @@ tools/   # Geradores de recursos (fora do build do Maven)
 - **Catálogo fixo dos quatro jogos**, na ordem `pong`, `forca`, `snake`,
   `campominado`. A disponibilidade é conferida por `jogos/<id>.jar` a cada
   montagem; jogo sem jar aparece como **não instalado** e o JOGAR fica apagado.
-- **Estilo full-bleed**: a arte do jogo selecionado ocupa a janela toda; rail de
-  cards (280px) à direita, descrição embaixo e o botão JOGAR sobre a arte.
+- **Disposição**: a arte do jogo selecionado preenche o **banner do topo**
+  (largura toda, corte *cover*) com o **painel de info à esquerda** por cima; os
+  quatro **cards** ficam numa faixa na base, em linha, com o **JOGAR** alinhado à
+  direita. Teclado: setas (ou `W A S D`), `Enter`/`Espaço` joga e `Esc` sai.
 - **Reaproveitar os logos dos jogos**: o launcher lê o `logo-256.png` de **dentro
   do jar** de cada jogo (o mesmo arquivo que o jogo usa no `.exe`), em vez de
   manter cópias. A Forca, que não tem logo, ganha uma **arte desenhada por
@@ -64,9 +66,12 @@ tools/   # Geradores de recursos (fora do build do Maven)
 
 - [x] **1 — Núcleo e catálogo**: `JogoInfo`, `CatalogoDeJogos`, disponibilidade,
   comando de lançamento e lançador por `ProcessBuilder` — testados.
-- [x] **2 — Interface**: geometria full-bleed com alvos clicáveis, desenho por
-  pixels (banner, cards, seleção, hover, JOGAR, arte da Forca por código) e a
-  janela com mouse, teclado, hover e lançamento — validada visualmente.
+- [x] **2 — Interface**: geometria com banner no topo, info à esquerda e cards
+  em linha na base, desenho por
+  pixels (arte em *cover*, painel de info, cards, seleção, hover, JOGAR, arte da
+  Forca por código) e a
+  janela com mouse, teclado (setas/WASD), hover e lançamento — validada
+  visualmente.
 - [x] **3 — Leitura das artes**: logos lidos de dentro dos jars dos jogos.
 - [x] **4 — Acabamento**: logo/ícones gerados por código e embutidos no exe,
   README e este kanban, push e conferência do artefato.
