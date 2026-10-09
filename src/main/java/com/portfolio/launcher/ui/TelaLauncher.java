@@ -35,6 +35,7 @@ import javax.swing.WindowConstants;
 public final class TelaLauncher extends JPanel {
 
     private static final int TEMPO_DA_MENSAGEM_MS = 2200;
+    private static final int INTERVALO_DA_ANIMACAO_MS = 40;
 
     private final EstadoLauncher estado;
     private final Lancador lancador;
@@ -42,6 +43,7 @@ public final class TelaLauncher extends JPanel {
     private final Map<String, BufferedImage> artes;
     private JFrame janela;
     private Timer timerDaMensagem;
+    private Timer timerDaAnimacao;
     Runnable acaoDeSaida;
 
     public TelaLauncher(Lancador lancador, Path raiz, Map<String, BufferedImage> artes) {
@@ -74,6 +76,8 @@ public final class TelaLauncher extends JPanel {
         janela.pack();
         janela.setLocationRelativeTo(null);
         janela.setVisible(true);
+        timerDaAnimacao = new Timer(INTERVALO_DA_ANIMACAO_MS, evento -> repaint());
+        timerDaAnimacao.start();
     }
 
     public static void main(String[] args) {
@@ -83,7 +87,8 @@ public final class TelaLauncher extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        DesenhoLauncher.desenhar((Graphics2D) g, LayoutLauncher.areaBase(), estado, artes);
+        DesenhoLauncher.desenhar((Graphics2D) g, LayoutLauncher.areaBase(), estado, artes,
+                System.currentTimeMillis());
     }
 
     private static Set<String> disponiveisDe(Path raiz) {
@@ -248,6 +253,9 @@ public final class TelaLauncher extends JPanel {
     private void pararTimer() {
         if (timerDaMensagem != null) {
             timerDaMensagem.stop();
+        }
+        if (timerDaAnimacao != null) {
+            timerDaAnimacao.stop();
         }
     }
 

@@ -102,6 +102,15 @@ public class LayoutLauncherTest {
     }
 
     @Test
+    public void descricaoTemOMesmoTamanhoVerticalDaAreaDeGuarda() {
+        Rectangle area = LayoutLauncher.areaBase();
+        Rectangle descricao = LayoutLauncher.descricao(area);
+        Rectangle guarda = LayoutLauncher.areaDeGuarda(area);
+        assertEquals(guarda.y, descricao.y);
+        assertEquals(guarda.height, descricao.height);
+    }
+
+    @Test
     public void cardsNaoSeSobrepoemAoJogar() {
         Rectangle area = LayoutLauncher.areaBase();
         Rectangle jogar = LayoutLauncher.jogar(area);

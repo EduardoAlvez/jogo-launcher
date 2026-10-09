@@ -15,7 +15,6 @@ public final class LayoutLauncher {
     private static final int LARGURA_JOGAR = 196;
     private static final int ALTURA_JOGAR = 74;
     private static final int LARGURA_INFO = 400;
-    private static final int ALTURA_INFO = 300;
 
     private LayoutLauncher() {
     }
@@ -53,7 +52,8 @@ public final class LayoutLauncher {
     }
 
     public static Rectangle descricao(Rectangle area) {
-        return new Rectangle(area.x + MARGEM, area.y + 96, LARGURA_INFO, ALTURA_INFO);
+        Rectangle banner = areaDaArte(area);
+        return new Rectangle(area.x + MARGEM, area.y + 40, LARGURA_INFO, banner.height - 80);
     }
 
     public static Rectangle areaDeGuarda(Rectangle area) {

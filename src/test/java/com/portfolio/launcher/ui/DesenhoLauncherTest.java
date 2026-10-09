@@ -1,6 +1,7 @@
 package com.portfolio.launcher.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -102,6 +103,28 @@ public class DesenhoLauncherTest {
     }
 
     @Test
+    public void botaoPulsaAoLongoDoTempo() {
+        EstadoLauncher estado = estadoComTodosDisponiveis();
+        BufferedImage calmo = renderizarEm(estado, artes(), 0);
+        BufferedImage pico = renderizarEm(estado, artes(), DesenhoLauncher.PERIODO_PULSO_MS / 4);
+        Rectangle jogar = LayoutLauncher.jogar(LayoutLauncher.areaBase());
+        int x = jogar.x - 11;
+        int y = jogar.y + jogar.height / 2;
+        assertNotEquals("o brilho do botao tem que mudar com o tempo",
+                corEm(calmo, x, y), corEm(pico, x, y));
+    }
+
+    @Test
+    public void nomeLongoNaoPassaDaBordaDoCard() {
+        BufferedImage tela = new BufferedImage(200, 60, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = tela.createGraphics();
+        String ajustado = DesenhoLauncher.ajustarTexto(g, "Jogo da Forca", java.awt.Font.BOLD, 15, 11, 70);
+        assertTrue("o nome tem que caber no limite",
+                g.getFontMetrics().stringWidth(ajustado) <= 70);
+        g.dispose();
+    }
+
+    @Test
     public void painelDeDescricaoTemOFundoDoPainel() {
         BufferedImage imagem = renderizar(estadoComTodosDisponiveis(), artes());
         Rectangle painel = LayoutLauncher.descricao(LayoutLauncher.areaBase());
@@ -185,13 +208,18 @@ public class DesenhoLauncherTest {
     }
 
     private BufferedImage renderizar(EstadoLauncher estado, Map<String, BufferedImage> artes) {
+        return renderizarEm(estado, artes, 0);
+    }
+
+    private BufferedImage renderizarEm(EstadoLauncher estado, Map<String, BufferedImage> artes,
+                                       long tempoMs) {
         Rectangle area = LayoutLauncher.areaBase();
         BufferedImage imagem = new BufferedImage(area.width, area.height,
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = imagem.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        DesenhoLauncher.desenhar(g, area, estado, artes);
+        DesenhoLauncher.desenhar(g, area, estado, artes, tempoMs);
         g.dispose();
         return imagem;
     }
