@@ -1,6 +1,7 @@
 package com.portfolio.launcher.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -18,9 +19,12 @@ public class DesenhoLauncherTest {
     private static final int MAGENTA = 0xFF00FF;
 
     @Test
-    public void fundoComecaComACorDeCimaDoGradiente() {
+    public void fundoEscureceDeCimaParaBaixoNaFaixaVisivel() {
         BufferedImage imagem = renderizar(estadoComTodosDisponiveis(), artes());
-        assertEquals(DesenhoLauncher.COR_FUNDO_INICIO, corEm(imagem, 5, 5));
+        int topo = corEm(imagem, 5, 482);
+        int base = corEm(imagem, 5, 638);
+        assertTrue("o gradiente do fundo tem que escurecer de cima para baixo",
+                somaDeCanais(topo) < somaDeCanais(base));
     }
 
     @Test
@@ -91,9 +95,9 @@ public class DesenhoLauncherTest {
     }
 
     @Test
-    public void arteDoJogoVaiAoCantEsquerdaDoBanner() {
+    public void arteDoJogoEhDesenhadaCobrindoOBanner() {
         BufferedImage imagem = renderizar(estadoComTodosDisponiveis(), artes());
-        assertEquals(MAGENTA, corEm(imagem, 400, 300));
+        assertEquals(MAGENTA, corEm(imagem, 800, 300));
     }
 
     @Test
@@ -101,8 +105,8 @@ public class DesenhoLauncherTest {
         EstadoLauncher estado = novoEstadoComDisponivel("pong");
         estado.setIndiceSelecionado(1);
         BufferedImage imagem = renderizar(estado, artes());
-        Rectangle espaco = LayoutLauncher.areaDaArte(LayoutLauncher.areaBase());
-        assertEquals(DesenhoLauncher.COR_PAINEL, corEm(imagem, espaco.x + 130, espaco.y + 130));
+        Rectangle guarda = LayoutLauncher.areaDeGuarda(LayoutLauncher.areaBase());
+        assertEquals(DesenhoLauncher.COR_PAINEL, corEm(imagem, guarda.x + 8, guarda.y + 8));
     }
 
     @Test
@@ -110,9 +114,14 @@ public class DesenhoLauncherTest {
         EstadoLauncher estado = novoEstadoComDisponivel("pong");
         estado.setIndiceSelecionado(1);
         BufferedImage imagem = renderizar(estado, artes());
-        Rectangle espaco = LayoutLauncher.areaDaArte(LayoutLauncher.areaBase());
-        assertEquals(DesenhoLauncher.COR_TEXTO_MEDIO, corEm(imagem, espaco.x + 260, espaco.y + 400));
-        assertEquals(DesenhoLauncher.COR_ACENTO, corEm(imagem, espaco.x + 416, espaco.y + 177));
+        Rectangle palco = LayoutLauncher.areaDeGuarda(LayoutLauncher.areaBase());
+        int xPoste = palco.x + palco.width * 26 / 100;
+        int topoY = palco.y + palco.height * 8 / 100;
+        int baseY = palco.y + palco.height * 90 / 100;
+        assertEquals(DesenhoLauncher.COR_TEXTO_MEDIO, corEm(imagem, xPoste + 3, (topoY + baseY) / 2));
+        int cx = xPoste + palco.width * 28 / 100 - 2;
+        int cyCabeca = topoY + 7 + palco.height * 6 / 100;
+        assertEquals(DesenhoLauncher.COR_ACENTO, corEm(imagem, cx, cyCabeca + palco.width * 5 / 100));
     }
 
     @Test
@@ -130,15 +139,13 @@ public class DesenhoLauncherTest {
         EstadoLauncher estado = estadoComTodosDisponiveis();
         estado.setMensagem("Abrindo Snake...");
         BufferedImage imagem = renderizar(estado, artes());
-        Rectangle area = LayoutLauncher.areaBase();
-        assertEquals(DesenhoLauncher.COR_TOAST, corEm(imagem, area.width / 2 - 270, 103));
+        assertEquals(DesenhoLauncher.COR_TOAST, corEm(imagem, 700, 103));
     }
 
     @Test
     public void semMensagemNaoHaToast() {
         BufferedImage imagem = renderizar(estadoComTodosDisponiveis(), artes());
-        Rectangle area = LayoutLauncher.areaBase();
-        assertEquals(MAGENTA, corEm(imagem, area.width / 2 - 270, 103));
+        assertEquals(MAGENTA, corEm(imagem, 700, 103));
     }
 
     private EstadoLauncher estadoComTodosDisponiveis() {
@@ -176,5 +183,9 @@ public class DesenhoLauncherTest {
 
     private int corEm(BufferedImage imagem, int x, int y) {
         return imagem.getRGB(x, y) & 0xFFFFFF;
+    }
+
+    private int somaDeCanais(int rgb) {
+        return ((rgb >> 16) & 0xFF) + ((rgb >> 8) & 0xFF) + (rgb & 0xFF);
     }
 }

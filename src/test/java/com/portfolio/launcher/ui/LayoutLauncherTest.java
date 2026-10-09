@@ -18,20 +18,21 @@ public class LayoutLauncherTest {
     }
 
     @Test
-    public void cardsOcupamAColunaDaDireitaEmOrdem() {
+    public void cardsOcupamAFaixaDeBaixoEmLinha() {
         Rectangle area = LayoutLauncher.areaBase();
         Rectangle primeiro = LayoutLauncher.cardDoIndice(area, 0);
         Rectangle ultimo = null;
         for (int i = 0; i < 4; i++) {
             Rectangle card = LayoutLauncher.cardDoIndice(area, i);
-            assertEquals(primeiro.x, card.x);
-            assertEquals(primeiro.width, card.width);
-            assertEquals(90 + i * 92, card.y);
+            assertEquals(primeiro.y, card.y);
+            assertEquals(primeiro.height, card.height);
+            assertEquals(20 + i * 212, card.x);
+            assertEquals(196, card.width);
             ultimo = card;
         }
-        assertEquals(442, ultimo.y + ultimo.height);
+        assertEquals(522, ultimo.y);
+        assertEquals(598, ultimo.y + ultimo.height);
         assertTrue(ultimo.y + ultimo.height < area.height);
-        assertTrue(primeiro.x > 0);
     }
 
     @Test
@@ -56,35 +57,48 @@ public class LayoutLauncherTest {
     }
 
     @Test
-    public void jogarFicaAbaixoDosCardsNaMesmaColuna() {
+    public void jogarFicaNaMesmaFaixaDosCardsADireita() {
         Rectangle area = LayoutLauncher.areaBase();
         Rectangle jogar = LayoutLauncher.jogar(area);
         Rectangle ultimoCard = LayoutLauncher.cardDoIndice(area, 3);
-        assertEquals(LayoutLauncher.cardDoIndice(area, 0).x, jogar.x);
-        assertEquals(260, jogar.width);
-        assertEquals(60, jogar.height);
-        assertTrue(jogar.y > ultimoCard.y + ultimoCard.height);
+        assertEquals(ultimoCard.y, jogar.y);
+        assertEquals(196, jogar.width);
+        assertEquals(76, jogar.height);
+        assertTrue(jogar.x > ultimoCard.x + ultimoCard.width);
+        assertTrue(jogar.x + jogar.width <= area.width);
         assertTrue(jogar.y + jogar.height <= area.height);
     }
 
     @Test
-    public void descricaoFicaAEsquerdaSemInvadirAColunaDosCards() {
+    public void descricaoFicaNaEsquerdaDentroDoBanner() {
         Rectangle area = LayoutLauncher.areaBase();
         Rectangle descricao = LayoutLauncher.descricao(area);
+        Rectangle banner = LayoutLauncher.areaDaArte(area);
         Rectangle primeiroCard = LayoutLauncher.cardDoIndice(area, 0);
         assertTrue(descricao.x >= area.x);
-        assertTrue(descricao.x + descricao.width <= primeiroCard.x);
-        assertTrue(descricao.y + descricao.height <= area.height);
+        assertTrue(descricao.y + descricao.height <= banner.y + banner.height);
+        assertTrue(descricao.y + descricao.height <= primeiroCard.y);
     }
 
     @Test
-    public void areaDaArteEATelaInteiraMenosAColuna() {
+    public void areaDaArteEhOBannerDoTopo() {
         Rectangle area = LayoutLauncher.areaBase();
-        Rectangle arte = LayoutLauncher.areaDaArte(area);
-        assertEquals(0, arte.x);
-        assertEquals(0, arte.y);
-        assertEquals(820, arte.width);
-        assertEquals(640, arte.height);
+        Rectangle banner = LayoutLauncher.areaDaArte(area);
+        assertEquals(0, banner.x);
+        assertEquals(0, banner.y);
+        assertEquals(1100, banner.width);
+        assertEquals(480, banner.height);
+    }
+
+    @Test
+    public void areaDeGuardaFicaADireitaDaInfoDentroDoBanner() {
+        Rectangle area = LayoutLauncher.areaBase();
+        Rectangle guarda = LayoutLauncher.areaDeGuarda(area);
+        Rectangle descricao = LayoutLauncher.descricao(area);
+        Rectangle banner = LayoutLauncher.areaDaArte(area);
+        assertTrue(guarda.x > descricao.x + descricao.width);
+        assertTrue(guarda.y + guarda.height <= banner.y + banner.height);
+        assertTrue(guarda.x + guarda.width <= area.width);
     }
 
     @Test
@@ -93,8 +107,7 @@ public class LayoutLauncherTest {
         Rectangle jogar = LayoutLauncher.jogar(area);
         for (int i = 0; i < 4; i++) {
             Rectangle card = LayoutLauncher.cardDoIndice(area, i);
-            assertFalse("card " + i + " sobrepoe o JOGAR",
-                    card.intersects(jogar));
+            assertFalse("card " + i + " sobrepoe o JOGAR", card.intersects(jogar));
         }
     }
 
@@ -117,7 +130,7 @@ public class LayoutLauncherTest {
     }
 
     @Test
-    public void alvoEmNoMeioDoBannerDaNenhum() {
+    public void alvoEmNoBannerDaNenhum() {
         Rectangle area = LayoutLauncher.areaBase();
         assertEquals(Alvo.NENHUM, LayoutLauncher.alvoEm(area, 300, 200));
         assertEquals(Alvo.NENHUM, LayoutLauncher.alvoEm(area, 50, 30));
@@ -132,7 +145,7 @@ public class LayoutLauncherTest {
     }
 
     @Test
-    public void jogarEhDesenhadoPorCimaDaBaseNaoInterceptaDescricao() {
+    public void jogarNaoInterceptaDescricao() {
         Rectangle area = LayoutLauncher.areaBase();
         Rectangle descricao = LayoutLauncher.descricao(area);
         Rectangle jogar = LayoutLauncher.jogar(area);

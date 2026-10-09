@@ -10,6 +10,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public final class DesenhoLauncher {
     public static final int COR_TOAST = 0x29313b;
 
     private static final int ARREDONDAMENTO = 14;
+    private static final int LARGURA_ESCURECIMENTO = 520;
 
     private DesenhoLauncher() {
     }
@@ -66,57 +68,60 @@ public final class DesenhoLauncher {
 
     private static void desenharArte(Graphics2D g, Rectangle area, JogoInfo jogo,
                                      BufferedImage arte) {
-        Rectangle espaco = LayoutLauncher.areaDaArte(area);
+        Rectangle banner = LayoutLauncher.areaDaArte(area);
         if (jogo.temArte() && arte != null) {
-            int lado = Math.min(espaco.width, espaco.height);
-            int x = espaco.x + (espaco.width - lado) / 2;
-            g.drawImage(arte, x, espaco.y, lado, espaco.height, null);
-            desenharEscurecimento(g, area, espaco, lado);
+            desenharCobrindo(g, banner, arte);
+            desenharEscurecimento(g, banner);
             return;
         }
-        desenharArteDeGuarda(g, espaco, jogo);
+        desenharArteDeGuarda(g, LayoutLauncher.areaDeGuarda(area), jogo);
     }
 
-    private static void desenharEscurecimento(Graphics2D g, Rectangle area,
-                                              Rectangle espaco, int ladoArte) {
-        Color transparente = new Color(COR_FUNDO_INICIO << 8 | 0x00, true);
-        Color escuroDir = new Color(COR_FUNDO_INICIO << 8 | 0xEB, true);
-        g.setPaint(new java.awt.GradientPaint(
-                espaco.x + espaco.width - 280, espaco.y, transparente,
-                espaco.x + espaco.width, espaco.y, escuroDir));
-        Rectangle direita = new Rectangle(espaco.x + espaco.width - 280, espaco.y, 280, espaco.height);
-        g.fill(direita);
-        g.setPaint(new java.awt.GradientPaint(
-                espaco.x, espaco.y + espaco.height - 170, transparente,
-                espaco.x, espaco.y + espaco.height, escuroDir));
-        Rectangle baixo = new Rectangle(espaco.x, espaco.y + espaco.height - 170,
-                espaco.width, 170);
-        g.fill(baixo);
+    private static void desenharCobrindo(Graphics2D g, Rectangle banner, BufferedImage arte) {
+        double escala = Math.max(
+                (double) banner.width / arte.getWidth(),
+                (double) banner.height / arte.getHeight());
+        int largura = (int) Math.ceil(arte.getWidth() * escala);
+        int altura = (int) Math.ceil(arte.getHeight() * escala);
+        int x = banner.x + (banner.width - largura) / 2;
+        int y = banner.y + (banner.height - altura) / 2;
+        Shape antigo = g.getClip();
+        g.setClip(banner);
+        g.drawImage(arte, x, y, largura, altura, null);
+        g.setClip(antigo);
     }
 
-    private static void desenharArteDeGuarda(Graphics2D g, Rectangle espaco, JogoInfo jogo) {
+    private static void desenharEscurecimento(Graphics2D g, Rectangle banner) {
+        int r = (COR_FUNDO_INICIO >> 16) & 0xFF;
+        int gr = (COR_FUNDO_INICIO >> 8) & 0xFF;
+        int b = COR_FUNDO_INICIO & 0xFF;
+        g.setPaint(new java.awt.GradientPaint(
+                banner.x, banner.y, new Color(r, gr, b, 0xEA),
+                banner.x + LARGURA_ESCURECIMENTO, banner.y, new Color(r, gr, b, 0)));
+        g.fillRect(banner.x, banner.y, LARGURA_ESCURECIMENTO, banner.height);
+    }
+
+    private static void desenharArteDeGuarda(Graphics2D g, Rectangle guarda, JogoInfo jogo) {
         if (!jogo.temArte()) {
-            desenharBonecoDaForca(g, espaco, jogo);
+            desenharBonecoDaForca(g, guarda, jogo);
             return;
         }
-        Rectangle cartaz = new Rectangle(espaco.x + 110, espaco.y + 110, 560, 420);
         g.setColor(new Color(COR_PAINEL));
-        g.fillRoundRect(cartaz.x, cartaz.y, cartaz.width, cartaz.height, ARREDONDAMENTO, ARREDONDAMENTO);
+        g.fillRoundRect(guarda.x, guarda.y, guarda.width, guarda.height,
+                ARREDONDAMENTO, ARREDONDAMENTO);
         g.setColor(new Color(COR_BORDA_CARD));
         g.setStroke(new BasicStroke(2f));
-        g.drawRoundRect(cartaz.x, cartaz.y, cartaz.width, cartaz.height, ARREDONDAMENTO, ARREDONDAMENTO);
+        g.drawRoundRect(guarda.x, guarda.y, guarda.width, guarda.height,
+                ARREDONDAMENTO, ARREDONDAMENTO);
         g.setColor(new Color(COR_TEXTO));
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 56));
-        centralizar(g, jogo.getNome(), cartaz, cartaz.y + 200);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 54));
+        centralizar(g, jogo.getNome(), guarda, guarda.y + guarda.height / 2);
         g.setColor(new Color(COR_TEXTO_MEDIO));
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-        g.drawString("JOGO DO PORTFOLIO",
-                cartaz.x + (cartaz.width - largura(g, "JOGO DO PORTFOLIO")) / 2,
-                cartaz.y + 260);
+        centralizar(g, "JOGO DO PORTFOLIO", guarda, guarda.y + guarda.height / 2 + 54);
     }
 
-    private static void desenharBonecoDaForca(Graphics2D g, Rectangle espaco, JogoInfo jogo) {
-        Rectangle palco = new Rectangle(espaco.x + 110, espaco.y + 60, 600, 500);
+    private static void desenharBonecoDaForca(Graphics2D g, Rectangle palco, JogoInfo jogo) {
         g.setColor(new Color(COR_PAINEL));
         g.fillRoundRect(palco.x, palco.y, palco.width, palco.height,
                 ARREDONDAMENTO, ARREDONDAMENTO);
@@ -125,26 +130,36 @@ public final class DesenhoLauncher {
         g.drawRoundRect(palco.x, palco.y, palco.width, palco.height,
                 ARREDONDAMENTO, ARREDONDAMENTO);
 
-        int xPoste = palco.x + 150;
-        int yBase = palco.y + 460;
-        g.setColor(new Color(COR_TEXTO_MEDIO));
-        g.fillRect(xPoste, palco.y + 40, 8, yBase - (palco.y + 40));
-        g.fillRect(xPoste, palco.y + 40, 160, 10);
-        g.fillRect(xPoste + 150, palco.y + 50, 8, 30);
+        int xPoste = palco.x + palco.width * 26 / 100;
+        int topoY = palco.y + palco.height * 8 / 100;
+        int baseY = palco.y + palco.height * 90 / 100;
+        int grossura = Math.max(6, palco.width / 80);
+        int viga = palco.width * 28 / 100;
+        int corda = Math.max(4, grossura - 2);
+        int queda = palco.height * 6 / 100;
+        int cx = xPoste + viga - corda / 2;
+        int cyCabeca = topoY + grossura + queda;
+        int raio = palco.width * 5 / 100;
 
-        int hx = xPoste + 156;
+        g.setColor(new Color(COR_TEXTO_MEDIO));
+        g.fillRect(xPoste, topoY, grossura, baseY - topoY);
+        g.fillRect(xPoste, topoY, viga, grossura);
+        g.fillRect(xPoste + viga - corda, topoY + grossura, corda, queda);
+
         g.setColor(new Color(COR_ACENTO));
-        g.fillOval(hx - 13, palco.y + 80, 26, 26);
-        g.fillRect(hx - 3, palco.y + 106, 6, 96);
-        g.fillRect(hx - 40, palco.y + 122, 34, 6);
-        g.fillRect(hx + 6, palco.y + 122, 34, 6);
-        g.fillRect(hx - 30, palco.y + 296, 30, 6);
-        g.fillRect(hx, palco.y + 296, 30, 6);
+        g.fillOval(cx - raio, cyCabeca, raio * 2, raio * 2);
+        int ombroY = cyCabeca + raio * 2;
+        int troncoFim = ombroY + palco.height * 24 / 100;
+        g.fillRect(cx - grossura / 2, ombroY, grossura, troncoFim - ombroY);
+        int braco = palco.width * 7 / 100;
+        g.fillRect(cx - braco, ombroY + 16, braco, 6);
+        g.fillRect(cx, ombroY + 16, braco, 6);
+        g.fillRect(cx - braco, troncoFim, braco, 6);
+        g.fillRect(cx, troncoFim, braco, 6);
 
         g.setColor(new Color(COR_TEXTO));
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 36));
-        String nome = jogo.getNome();
-        g.drawString(nome, palco.x + (palco.width - largura(g, nome)) / 2, palco.y + 400);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 34));
+        centralizar(g, jogo.getNome(), palco, palco.y + palco.height * 88 / 100);
     }
 
     private static void desenharTitulo(Graphics2D g, Rectangle area) {
@@ -164,9 +179,9 @@ public final class DesenhoLauncher {
                 ARREDONDAMENTO, ARREDONDAMENTO);
 
         int x = painel.x + 24;
-        int yNome = painel.y + 34;
+        int yNome = painel.y + 36;
         g.setColor(new Color(COR_TEXTO));
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 28));
         g.drawString(jogo.getNome(), x, yNome);
         int tgX = x + largura(g, jogo.getNome()) + 14;
 
@@ -179,20 +194,20 @@ public final class DesenhoLauncher {
 
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
         g.setColor(new Color(COR_TEXTO_MEDIO));
-        int y = painel.y + 64;
+        int y = painel.y + 74;
         for (String linha : quebrar(g, jogo.getDescricao(), painel.width - 48)) {
             g.drawString(linha, x, y);
             y += 20;
         }
 
+        y += 12;
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-        g.setColor(new Color(COR_TEXTO_MEDIO));
-        g.drawString("Controles", x, painel.y + 118);
+        g.drawString("Controles", x, y);
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
-        int yCtrl = painel.y + 140;
+        y += 22;
         for (String linha : quebrar(g, jogo.getControles(), painel.width - 48)) {
-            g.drawString(linha, x, yCtrl);
-            yCtrl += 18;
+            g.drawString(linha, x, y);
+            y += 18;
         }
     }
 
@@ -220,19 +235,12 @@ public final class DesenhoLauncher {
         Rectangle icone = LayoutLauncher.iconeDoCard(card);
         desenharIcone(g, icone, jogo, arte);
 
-        int tx = icone.x + icone.width + 16;
+        int tx = icone.x + icone.width + 14;
         g.setColor(new Color(disponivel ? COR_TEXTO : COR_TEXTO_MEDIO));
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 17));
-        g.drawString(jogo.getNome(), tx, card.y + 32);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 15));
+        g.drawString(jogo.getNome(), tx, card.y + 34);
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-        g.drawString(jogo.getTag(), tx, card.y + 52);
-
-        if (!disponivel) {
-            g.setColor(new Color(COR_TEXTO_MEDIO));
-            g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
-            String aviso = "nao instalado";
-            g.drawString(aviso, card.x + card.width - largura(g, aviso) - 12, card.y + 32);
-        }
+        g.drawString(jogo.getTag(), tx, card.y + 54);
     }
 
     private static boolean ehHoverDesteCard(int indice, Alvo hover) {
@@ -283,9 +291,8 @@ public final class DesenhoLauncher {
         g.setColor(new Color(cor));
         g.fillRoundRect(botao.x, botao.y, botao.width, botao.height, 12, 12);
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
-        String rotulo = "JOGAR";
         g.setColor(new Color(COR_TEXTO));
-        centralizar(g, rotulo, botao, botao.y + 38);
+        centralizar(g, "JOGAR", botao, botao.y + botao.height / 2 + 8);
     }
 
     private static void desenharMensagem(Graphics2D g, Rectangle area, EstadoLauncher estado) {
@@ -307,8 +314,8 @@ public final class DesenhoLauncher {
     private static void desenharDica(Graphics2D g, Rectangle area) {
         g.setColor(new Color(COR_TEXTO_MEDIO));
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
-        g.drawString("↑↓ escolhe o jogo  ·  Enter joga  ·  Esc sai",
-                area.x + 36, area.y + area.height - 14);
+        String dica = "← → escolhe  ·  Enter joga  ·  Esc sai";
+        g.drawString(dica, area.x + area.width - 20 - largura(g, dica), area.y + 64);
     }
 
     private static void centralizar(Graphics2D g, String texto, Rectangle box, int y) {
