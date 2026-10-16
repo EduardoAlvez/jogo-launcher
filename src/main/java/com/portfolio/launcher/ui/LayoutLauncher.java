@@ -8,13 +8,13 @@ public final class LayoutLauncher {
     public static final int ALTURA_BASE = 640;
 
     private static final int MARGEM = 20;
-    private static final int ALTURA_FAIXA = 136;
-    private static final int CARD_LARGURA = 184;
-    private static final int CARD_ALTURA = 74;
-    private static final int ENTRE_CARDS = 24;
-    private static final int LARGURA_JOGAR = 196;
-    private static final int ALTURA_JOGAR = 74;
-    private static final int LARGURA_INFO = 400;
+    private static final int ALTURA_FAIXA = 150;
+    private static final int CARD_LARGURA = 200;
+    private static final int CARD_ALTURA = 88;
+    private static final int ENTRE_CARDS = 8;
+    private static final int LARGURA_JOGAR = 220;
+    private static final int ALTURA_JOGAR = 104;
+    private static final int LARGURA_INFO = 300;
 
     private LayoutLauncher() {
     }
@@ -53,15 +53,15 @@ public final class LayoutLauncher {
 
     public static Rectangle descricao(Rectangle area) {
         Rectangle banner = areaDaArte(area);
-        return new Rectangle(area.x + MARGEM, area.y + 40, LARGURA_INFO, banner.height - 80);
+        return new Rectangle(area.x + MARGEM, area.y + 48, LARGURA_INFO, banner.height - 68);
     }
 
     public static Rectangle areaDeGuarda(Rectangle area) {
         Rectangle banner = areaDaArte(area);
-        int x = area.x + MARGEM + LARGURA_INFO + 40;
-        int y = area.y + 40;
+        int x = area.x + MARGEM + LARGURA_INFO + 20;
+        int y = area.y + 48;
         int largura = area.x + area.width - MARGEM - x;
-        return new Rectangle(x, y, largura, banner.height - 80);
+        return new Rectangle(x, y, largura, banner.height - 68);
     }
 
     public static Alvo alvoEm(Rectangle area, int x, int y) {

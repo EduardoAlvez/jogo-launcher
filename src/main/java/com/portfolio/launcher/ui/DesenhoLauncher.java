@@ -39,8 +39,6 @@ public final class DesenhoLauncher {
     private static final int CRESCIMENTO_CARD = 6;
     private static final int CRESCIMENTO_CARD_HOVER = 3;
     private static final int CRESCIMENTO_JOGAR_HOVER = 4;
-    static final long PERIODO_PULSO_MS = 1400;
-
     private DesenhoLauncher() {
     }
 
@@ -63,11 +61,6 @@ public final class DesenhoLauncher {
 
     public static void desenhar(Graphics2D g, Rectangle area, EstadoLauncher estado,
                                 Map<String, BufferedImage> artes) {
-        desenhar(g, area, estado, artes, 0L);
-    }
-
-    public static void desenhar(Graphics2D g, Rectangle area, EstadoLauncher estado,
-                                Map<String, BufferedImage> artes, long tempoMs) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         desenharFundo(g, area);
         desenharArte(g, area, estado.jogoSelecionado(), arteDe(artes, estado.jogoSelecionado()));
@@ -76,7 +69,7 @@ public final class DesenhoLauncher {
         for (int i = 0; i < CatalogoDeJogos.quantidade(); i++) {
             desenharCard(g, area, i, arteDe(artes, CatalogoDeJogos.lista().get(i)), estado);
         }
-        desenharJogar(g, area, estado, tempoMs);
+        desenharJogar(g, area, estado);
         desenharMensagem(g, area, estado);
         desenharDica(g, area);
     }
@@ -191,7 +184,7 @@ public final class DesenhoLauncher {
     private static void desenharTitulo(Graphics2D g, Rectangle area) {
         g.setColor(new Color(COR_TEXTO));
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
-        g.drawString("PORTFOLIO DE JOGOS", area.x + 36, area.y + 32);
+        g.drawString("PORTFOLIO DE JOGOS", area.x + 36, area.y + 30);
     }
 
     private static void desenharDescricao(Graphics2D g, Rectangle area, JogoInfo jogo) {
@@ -207,20 +200,27 @@ public final class DesenhoLauncher {
         int x = painel.x + 24;
         int yNome = painel.y + 36;
         g.setColor(new Color(COR_TEXTO));
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 28));
-        g.drawString(jogo.getNome(), x, yNome);
-        int tgX = x + largura(g, jogo.getNome()) + 14;
+        String nome = ajustarTexto(g, jogo.getNome(), Font.BOLD, 28, 18, painel.width - 48);
+        g.drawString(nome, x, yNome);
+        int larguraNome = largura(g, nome);
 
-        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
         String tag = jogo.getTag();
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 13));
+        int larguraTag = largura(g, tag) + 18;
+        int tgX = x + larguraNome + 14;
+        int yTag = yNome;
+        if (tgX + larguraTag > painel.x + painel.width - 24) {
+            tgX = x;
+            yTag = yNome + 24;
+        }
         g.setColor(new Color(COR_ACENTO));
-        g.fillRoundRect(tgX, yNome - 16, largura(g, tag) + 18, 22, 11, 11);
+        g.fillRoundRect(tgX, yTag - 16, larguraTag, 22, 11, 11);
         g.setColor(new Color(COR_TEXTO));
-        g.drawString(tag, tgX + 9, yNome);
+        g.drawString(tag, tgX + 9, yTag);
 
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
         g.setColor(new Color(COR_TEXTO_MEDIO));
-        int y = painel.y + 74;
+        int y = painel.y + 78;
         for (String linha : quebrar(g, jogo.getDescricao(), painel.width - 48)) {
             g.drawString(linha, x, y);
             y += 20;
@@ -310,17 +310,12 @@ public final class DesenhoLauncher {
         g.fillRect(icone.x + 28, icone.y + 39, 6, 3);
     }
 
-    private static void desenharJogar(Graphics2D g, Rectangle area, EstadoLauncher estado,
-                                      long tempoMs) {
+    private static void desenharJogar(Graphics2D g, Rectangle area, EstadoLauncher estado) {
         Rectangle base = LayoutLauncher.jogar(area);
         boolean disponivel = estado.disponivel(estado.jogoSelecionado());
         boolean hover = estado.getHover() == Alvo.JOGAR && disponivel;
         Rectangle botao = jogarVisual(base, hover);
-        if (disponivel) {
-            desenharPulso(g, base, tempoMs);
-        }
-        int cor = !disponivel ? COR_JOGAR_DESABILITADO
-                : hover ? COR_JOGAR_HOVER : COR_JOGAR;
+        int cor = !disponivel ? COR_JOGAR_DESABILITADO : hover ? COR_JOGAR_HOVER : COR_JOGAR;
         g.setColor(new Color(cor));
         g.fillRoundRect(botao.x, botao.y, botao.width, botao.height, 12, 12);
         g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 22));
@@ -328,22 +323,6 @@ public final class DesenhoLauncher {
         centralizar(g, "JOGAR", botao, botao.y + botao.height / 2 + 8);
     }
 
-    static double pulsoEm(long tempoMs) {
-        double fase = (double) Math.floorMod(tempoMs, PERIODO_PULSO_MS) / PERIODO_PULSO_MS;
-        return 0.5 * (1 + Math.sin(2 * Math.PI * fase));
-    }
-
-    private static void desenharPulso(Graphics2D g, Rectangle botao, long tempoMs) {
-        int extra = CRESCIMENTO_JOGAR_HOVER + 3 + (int) Math.round(pulsoEm(tempoMs) * 4);
-        int alpha = 30 + (int) Math.round(pulsoEm(tempoMs) * 60);
-        int r = (COR_JOGAR >> 16) & 0xFF;
-        int gr = (COR_JOGAR >> 8) & 0xFF;
-        int b = COR_JOGAR & 0xFF;
-        g.setColor(new Color(r, gr, b, alpha));
-        g.setStroke(new BasicStroke(3f));
-        g.drawRoundRect(botao.x - extra, botao.y - extra,
-                botao.width + 2 * extra, botao.height + 2 * extra, 12 + extra, 12 + extra);
-    }
 
     private static void desenharMensagem(Graphics2D g, Rectangle area, EstadoLauncher estado) {
         String mensagem = estado.getMensagem();
@@ -362,10 +341,12 @@ public final class DesenhoLauncher {
     }
 
     private static void desenharDica(Graphics2D g, Rectangle area) {
+        Rectangle banner = LayoutLauncher.areaDaArte(area);
         g.setColor(new Color(COR_TEXTO_MEDIO));
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
         String dica = "← → escolhe  ·  Enter joga  ·  Esc sai";
-        g.drawString(dica, area.x + area.width - 20 - largura(g, dica), area.y + 64);
+        g.drawString(dica, area.x + area.width - 24 - largura(g, dica),
+                banner.y + banner.height - 14);
     }
 
     private static void centralizar(Graphics2D g, String texto, Rectangle box, int y) {

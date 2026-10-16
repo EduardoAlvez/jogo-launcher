@@ -27,10 +27,10 @@ public class LayoutLauncherTest {
             assertEquals(primeiro.y, card.y);
             assertEquals(primeiro.height, card.height);
             assertEquals(20 + i * 208, card.x);
-            assertEquals(184, card.width);
+            assertEquals(200, card.width);
             ultimo = card;
         }
-        assertEquals(535, ultimo.y);
+        assertEquals(521, ultimo.y);
         assertEquals(609, ultimo.y + ultimo.height);
         assertTrue(ultimo.y + ultimo.height < area.height);
     }
@@ -61,9 +61,9 @@ public class LayoutLauncherTest {
         Rectangle area = LayoutLauncher.areaBase();
         Rectangle jogar = LayoutLauncher.jogar(area);
         Rectangle ultimoCard = LayoutLauncher.cardDoIndice(area, 3);
-        assertEquals(ultimoCard.y, jogar.y);
-        assertEquals(196, jogar.width);
-        assertEquals(74, jogar.height);
+        assertEquals(220, jogar.width);
+        assertEquals(104, jogar.height);
+        assertTrue("o botao deve sobressair dos cards", jogar.height > ultimoCard.height);
         assertTrue(jogar.x > ultimoCard.x + ultimoCard.width);
         assertTrue(jogar.x + jogar.width <= area.width);
         assertTrue(jogar.y + jogar.height <= area.height);
@@ -87,7 +87,7 @@ public class LayoutLauncherTest {
         assertEquals(0, banner.x);
         assertEquals(0, banner.y);
         assertEquals(1100, banner.width);
-        assertEquals(504, banner.height);
+        assertEquals(490, banner.height);
     }
 
     @Test
@@ -108,6 +108,7 @@ public class LayoutLauncherTest {
         Rectangle guarda = LayoutLauncher.areaDeGuarda(area);
         assertEquals(guarda.y, descricao.y);
         assertEquals(guarda.height, descricao.height);
+        assertTrue("a info tem que ser mais estreita que a imagem", descricao.width < guarda.width);
     }
 
     @Test

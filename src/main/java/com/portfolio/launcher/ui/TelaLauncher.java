@@ -16,6 +16,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -35,7 +36,6 @@ import javax.swing.WindowConstants;
 public final class TelaLauncher extends JPanel {
 
     private static final int TEMPO_DA_MENSAGEM_MS = 2200;
-    private static final int INTERVALO_DA_ANIMACAO_MS = 40;
 
     private final EstadoLauncher estado;
     private final Lancador lancador;
@@ -43,7 +43,6 @@ public final class TelaLauncher extends JPanel {
     private final Map<String, BufferedImage> artes;
     private JFrame janela;
     private Timer timerDaMensagem;
-    private Timer timerDaAnimacao;
     Runnable acaoDeSaida;
 
     public TelaLauncher(Lancador lancador, Path raiz, Map<String, BufferedImage> artes) {
@@ -61,11 +60,24 @@ public final class TelaLauncher extends JPanel {
     }
 
     public TelaLauncher() {
-        this(new LancadorProcesso(), raizPadrao(), CarregadorDeArtes.carregar(raizPadrao()));
+        this(raizPadrao());
+    }
+
+    private TelaLauncher(Path raiz) {
+        this(new LancadorProcesso(), raiz, CarregadorDeArtes.carregar(raiz));
+    }
+
+    static Path raizComJogos(Path atual) {
+        for (Path p = atual; p != null; p = p.getParent()) {
+            if (Files.isDirectory(p.resolve("jogos"))) {
+                return p;
+            }
+        }
+        return atual;
     }
 
     private static Path raizPadrao() {
-        return Path.of(System.getProperty("user.dir"));
+        return raizComJogos(Path.of(System.getProperty("user.dir")));
     }
 
     public void abrir() {
@@ -76,8 +88,6 @@ public final class TelaLauncher extends JPanel {
         janela.pack();
         janela.setLocationRelativeTo(null);
         janela.setVisible(true);
-        timerDaAnimacao = new Timer(INTERVALO_DA_ANIMACAO_MS, evento -> repaint());
-        timerDaAnimacao.start();
     }
 
     public static void main(String[] args) {
@@ -87,8 +97,7 @@ public final class TelaLauncher extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        DesenhoLauncher.desenhar((Graphics2D) g, LayoutLauncher.areaBase(), estado, artes,
-                System.currentTimeMillis());
+        DesenhoLauncher.desenhar((Graphics2D) g, LayoutLauncher.areaBase(), estado, artes);
     }
 
     private static Set<String> disponiveisDe(Path raiz) {
@@ -254,9 +263,7 @@ public final class TelaLauncher extends JPanel {
         if (timerDaMensagem != null) {
             timerDaMensagem.stop();
         }
-        if (timerDaAnimacao != null) {
-            timerDaAnimacao.stop();
-        }
+
     }
 
     private static int indiceDe(Alvo alvo) {

@@ -162,4 +162,17 @@ public class TelaLauncherTest {
             return true;
         }
     }
-}
+    @Test
+    public void raizSobeDoTargetAteAcharAJogosVizinha() throws IOException {
+        Path raiz = pasta.getRoot().toPath();
+        Files.createDirectories(raiz.resolve("jogos"));
+        Path target = Files.createDirectories(raiz.resolve("target"));
+        assertEquals(raiz, TelaLauncher.raizComJogos(target));
+    }
+
+    @Test
+    public void raizSemJogosEmNenhumPaiFicaNoAtual() {
+        Path atual = pasta.getRoot().toPath();
+        assertEquals(atual, TelaLauncher.raizComJogos(atual));
+    }
+    }

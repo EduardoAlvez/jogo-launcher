@@ -1,7 +1,6 @@
 package com.portfolio.launcher.ui;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -102,18 +101,7 @@ public class DesenhoLauncherTest {
         assertEquals(DesenhoLauncher.COR_JOGAR_DESABILITADO, corEm(imagem, jogar.x + 8, jogar.y + 30));
     }
 
-    @Test
-    public void botaoPulsaAoLongoDoTempo() {
-        EstadoLauncher estado = estadoComTodosDisponiveis();
-        BufferedImage calmo = renderizarEm(estado, artes(), 0);
-        BufferedImage pico = renderizarEm(estado, artes(), DesenhoLauncher.PERIODO_PULSO_MS / 4);
-        Rectangle jogar = LayoutLauncher.jogar(LayoutLauncher.areaBase());
-        int x = jogar.x - 11;
-        int y = jogar.y + jogar.height / 2;
-        assertNotEquals("o brilho do botao tem que mudar com o tempo",
-                corEm(calmo, x, y), corEm(pico, x, y));
-    }
-
+    
     @Test
     public void nomeLongoNaoPassaDaBordaDoCard() {
         BufferedImage tela = new BufferedImage(200, 60, BufferedImage.TYPE_INT_ARGB);
@@ -152,13 +140,17 @@ public class DesenhoLauncherTest {
         estado.setIndiceSelecionado(1);
         BufferedImage imagem = renderizar(estado, artes());
         Rectangle palco = LayoutLauncher.areaDeGuarda(LayoutLauncher.areaBase());
+        int grossura = Math.max(6, palco.width / 80);
+        int corda = Math.max(4, grossura - 2);
         int xPoste = palco.x + palco.width * 26 / 100;
         int topoY = palco.y + palco.height * 8 / 100;
         int baseY = palco.y + palco.height * 90 / 100;
-        assertEquals(DesenhoLauncher.COR_TEXTO_MEDIO, corEm(imagem, xPoste + 3, (topoY + baseY) / 2));
-        int cx = xPoste + palco.width * 28 / 100 - 2;
-        int cyCabeca = topoY + 7 + palco.height * 6 / 100;
-        assertEquals(DesenhoLauncher.COR_ACENTO, corEm(imagem, cx, cyCabeca + palco.width * 5 / 100));
+        assertEquals(DesenhoLauncher.COR_TEXTO_MEDIO,
+                corEm(imagem, xPoste + 3, (topoY + baseY) / 2));
+        int cx = xPoste + palco.width * 28 / 100 - corda / 2;
+        int cyCabeca = topoY + grossura + palco.height * 6 / 100;
+        assertEquals(DesenhoLauncher.COR_ACENTO,
+                corEm(imagem, cx, cyCabeca + palco.width * 5 / 100));
     }
 
     @Test
@@ -219,7 +211,7 @@ public class DesenhoLauncherTest {
         Graphics2D g = imagem.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        DesenhoLauncher.desenhar(g, area, estado, artes, tempoMs);
+        DesenhoLauncher.desenhar(g, area, estado, artes);
         g.dispose();
         return imagem;
     }
